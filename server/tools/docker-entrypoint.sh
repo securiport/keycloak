@@ -8,6 +8,10 @@ if [ $KEYCLOAK_USER ] && [ $KEYCLOAK_PASSWORD ]; then
     /opt/jboss/keycloak/bin/add-user-keycloak.sh --user $KEYCLOAK_USER --password $KEYCLOAK_PASSWORD
 fi
 
+if [ $KEYCLOAK_USER ] && [ $KEYCLOAK_PASSWORD_FILE ]; then
+    /opt/jboss/keycloak/bin/add-user-keycloak.sh --user $KEYCLOAK_USER --password $(cat $KEYCLOAK_PASSWORD_FILE)
+fi
+
 ############
 # Hostname #
 ############
