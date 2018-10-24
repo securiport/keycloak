@@ -10,6 +10,7 @@ fi
 
 if [ $KEYCLOAK_USER ] && [ $KEYCLOAK_PASSWORD_FILE ]; then
     /opt/jboss/keycloak/bin/add-user-keycloak.sh --user $KEYCLOAK_USER --password $(cat $KEYCLOAK_PASSWORD_FILE)
+    export KEYCLOAK_PASSWORD=$(cat $KEYCLOAK_PASSWORD_FILE)
 fi
 
 ############
@@ -114,7 +115,7 @@ export JDBC_PARAMS=$(echo ${JDBC_PARAMS} | sed '/^$/! s/^/?/')
 
 # Convert deprecated DB specific variables
 function set_legacy_vars() {
-  local suffixes=(ADDR DATABASE USER PASSWORD PORT)
+  local suffixes=(ADDR DATABASE USER PASSWORD PORT PASSWORD_FILE)
   for suffix in "${suffixes[@]}"; do
     local varname="$1_$suffix"
     if [ ${!varname} ]; then
@@ -124,6 +125,14 @@ function set_legacy_vars() {
   done
 }
 set_legacy_vars `echo $DB_VENDOR | tr a-z A-Z`
+
+#Add the password as an environment variable if the DB_PASSWORD_FILE variable exists
+if [ -z "${DB_PASSWORD_FILE+x}" ]; then
+
+        echo "'DB_PASSWORD_FILE' unset"
+else
+        export DB_PASSWORD=$(cat $DB_PASSWORD_FILE)
+fi
 
 # Configure DB
 
